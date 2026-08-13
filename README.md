@@ -106,25 +106,10 @@ The kit deploys a WAF Web ACL because CloudFront [flat-rate pricing plans](https
 
 ### 5. Add your own features
 
-See [`AGENTS.md`](./AGENTS.md) for development guide — local development setup, authentication patterns, async job setup, DB migration, and coding conventions.
-
-To add social sign-in (Google, Facebook, etc.), see [Add social sign-in to a user pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-configuring-federation-with-social-idp.html).
-
-## Agentic coding
-
-This kit is designed to work well with AI coding agents. The following setup is recommended.
-
-### Aurora DSQL skill
-
-Install the [Aurora DSQL skill](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/SECTION_aurora-dsql-steering.html) to give your agent DSQL-specific knowledge (schema design, migration patterns, constraints):
-
 ```sh
 npx skills add awslabs/mcp --skill dsql
 ```
 
-### Lint and format on save
-
-This kit uses [oxlint](https://oxc.rs/) + [oxfmt](https://oxc.rs/docs/guide/usage/formatter) — Rust-based linter and formatter fast enough to run on every file write without noticeable delay. Set up a post-write hook in your AI coding agent to get instant feedback:
 
 ```sh
 oxlint --config oxlintrc.json --fix <file>
@@ -163,34 +148,3 @@ The kit is configured for these plans by default:
 
 To opt out of WAF entirely, remove the Web ACL in [`apps/cdk/lib/us-east-1-stack.ts`](apps/cdk/lib/us-east-1-stack.ts) and drop `webAclId` from [`apps/cdk/bin/cdk.ts`](apps/cdk/bin/cdk.ts). The plan covers CloudFront-side usage only — Lambda / Lambda@Edge (dynamic requests are all cache-missed) are billed separately. To restrict access geographically, set `geoRestriction` in `bin/cdk.ts` (e.g. `GeoRestriction.allowlist('JP')`).
 
-## Clean up
-
-```sh
-cd apps/cdk
-pnpm exec cdk destroy --force
-```
-
-The Aurora DSQL cluster and Cognito user pool are retained by default (`RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE`) and are not deleted by `cdk destroy`. Delete them manually afterward if they are no longer needed.
-
-## Maintainers
-
-- [Kenji Kono (konokenj)](https://github.com/konokenj)
-
-### Core contributors
-
-- [Masashi Tomooka (tmokmss)](https://github.com/tmokmss) — original author
-- [Kazuho Cryer-Shinozuka (badmintoncryer)](https://github.com/badmintoncryer)
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-Contributors (human and AI) **must** read [`.starter-kit/DESIGN_PRINCIPLES.md`](./.starter-kit/DESIGN_PRINCIPLES.md) before making changes. It defines the design decisions and constraints that govern this kit.
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-## License
-
-This library is licensed under the MIT-0 License. See the LICENSE file.
